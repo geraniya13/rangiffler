@@ -1,5 +1,5 @@
 server:
-  port: 9000
+  port: 9002
   error:
     whitelabel:
       enabled: false
@@ -85,4 +85,4 @@ logging:
 rangiffler-front:
   base-uri: 'http://localhost:3001'
 rangiffler-auth:
-  base-uri: 'http://localhost:9000'
+  base-uri: 'http://localhost:9002'

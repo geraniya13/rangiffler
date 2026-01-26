@@ -45,24 +45,25 @@ dependencies {
     testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
     testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"
     // JUnit
-    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    implementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
     // REST
-    testImplementation "com.squareup.okhttp3:logging-interceptor:${okhttp3Version}"
-    testImplementation "com.squareup.okhttp3:okhttp-urlconnection:${okhttp3Version}"
-    testImplementation "com.squareup.okhttp3:okhttp:${okhttp3Version}"
-    testImplementation("com.squareup.retrofit2:retrofit:${retrofitVersion}") {
+    implementation "com.squareup.okhttp3:logging-interceptor:${okhttp3Version}"
+    implementation "com.squareup.okhttp3:okhttp-urlconnection:${okhttp3Version}"
+    implementation "com.squareup.okhttp3:okhttp:${okhttp3Version}"
+    implementation("com.squareup.retrofit2:retrofit:${retrofitVersion}") {
         exclude group: "com.squareup.okhttp3"
     }
-    testImplementation("com.squareup.retrofit2:converter-jackson:${retrofitVersion}") {
+    implementation("com.squareup.retrofit2:converter-jackson:${retrofitVersion}") {
         exclude group: "com.squareup.okhttp3"
     }
     testImplementation "org.springframework.data:spring-data-commons:${springDataCommonsVersion}"
     // DB
-    testImplementation "org.springframework:spring-jdbc:${springJdbcVersion}"
-    testImplementation "org.postgresql:postgresql:${project.ext.postgresDriverVersion}"
-    testImplementation "p6spy:p6spy:${p6spyVersion}"
-    testImplementation "org.hibernate:hibernate-core:${hibernateVersion}"
-    testImplementation "org.springframework.security:spring-security-crypto:${springCryptoVersion}"
+    implementation "org.springframework:spring-jdbc:${springJdbcVersion}"
+    implementation "org.postgresql:postgresql:${project.ext.postgresDriverVersion}"
+    implementation "p6spy:p6spy:${p6spyVersion}"
+    implementation "org.hibernate:hibernate-core:${hibernateVersion}"
+    implementation "org.springframework.security:spring-security-crypto:${springCryptoVersion}"
+    runtimeOnly "mysql:mysql-connector-java:${project.ext.mysqlDriverVersion}"
     // Allure
     testImplementation "io.qameta.allure:allure-attachments:${allureVersion}"
     testImplementation("io.qameta.allure:allure-junit5:${allureVersion}") {
@@ -74,9 +75,9 @@ dependencies {
     testImplementation "io.qameta.allure:allure-okhttp3:${allureVersion}"
     testImplementation "io.qameta.allure:allure-grpc:${allureVersion}"
     // WEB
-    testImplementation "com.codeborne:selenide:${selenideVersion}"
+    implementation "com.codeborne:selenide:${selenideVersion}"
     // Utils
-    testImplementation("com.github.javafaker:javafaker:${fakerVersion}") {
+    implementation("com.github.javafaker:javafaker:${fakerVersion}") {
         exclude group: 'org.yaml'
     }
     testImplementation 'commons-io:commons-io:2.20.0'
@@ -98,8 +99,8 @@ dependencies {
     // Wiremock
     testImplementation "org.wiremock:wiremock:${project.ext.wiremockVersion}"
     // Lombok
-    testAnnotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
-    testCompileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
 }
 
 tasks.withType(JavaCompile).configureEach {
