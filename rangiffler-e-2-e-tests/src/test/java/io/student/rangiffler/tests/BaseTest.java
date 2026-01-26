@@ -1,4 +1,4 @@
-package io.student.rangiffler.test;
+package io.student.rangiffler.tests;
 
 import com.github.javafaker.Faker;
 import io.student.rangiffler.config.Config;

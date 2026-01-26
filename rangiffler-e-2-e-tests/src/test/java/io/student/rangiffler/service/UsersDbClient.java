@@ -20,6 +20,17 @@ public class UsersDbClient implements UsersClient {
 
     private String uuid = UUID.randomUUID().toString();
 
+    private static final String INSERT_USER_SQL = """
+                  INSERT INTO `rangiffler-auth`.`user`
+                   (id, username,password,enabled,account_non_expired,account_non_locked,credentials_non_expired)  
+                   VALUES (UUID_TO_BIN(?, true),?,?,?,?,?,?);
+            """,
+            INSERT_AUTHORITIES_SQL = """
+                            INSERT INTO `rangiffler-auth`.authority 
+                            (id, user_id, authority)
+                            VALUES (UUID_TO_BIN(?, true),UUID_TO_BIN(?, true),?);
+                    """;
+
     @Override
     public UserJson createUser(String userName, String password) {
         try {
@@ -50,11 +61,7 @@ public class UsersDbClient implements UsersClient {
             String password
     ) {
         jdbcTemplate.update(
-                """
-                              INSERT INTO `rangiffler-auth`.`user`
-                               (id, username,password,enabled,account_non_expired,account_non_locked,credentials_non_expired)  
-                               VALUES (UUID_TO_BIN(?, true),?,?,?,?,?,?);
-                        """,
+                INSERT_USER_SQL,
                 uuid,
                 userName,
                 passwordEncoder.encode(password),
@@ -72,11 +79,7 @@ public class UsersDbClient implements UsersClient {
     ) {
         for (Authority authority : authorities) {
             jdbcTemplate.update(
-                    """
-                                    INSERT INTO `rangiffler-auth`.authority 
-                                    (id, user_id, authority)
-                                    VALUES (UUID_TO_BIN(?, true),UUID_TO_BIN(?, true),?);
-                            """,
+                    INSERT_AUTHORITIES_SQL,
                     UUID.randomUUID().toString(),
                     uuid,
                     authority.toString()

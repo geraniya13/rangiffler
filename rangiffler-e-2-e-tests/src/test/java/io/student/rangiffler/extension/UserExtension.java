@@ -11,16 +11,16 @@ import org.junit.platform.commons.support.AnnotationSupport;
 
 
 public class UserExtension implements BeforeEachCallback, ParameterResolver {
-    public final static String PASSWORD = "password";
+    private static final Faker faker = new Faker();
+
+    public final static String PASSWORD = faker.lorem().characters(6, true, true);
 
     private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UserExtension.class);
 
     private final UsersClient usersClient = new UsersDbClient();
 
-    private final Faker faker = new Faker();
-
     @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
+    public void beforeEach(ExtensionContext context) {
         AnnotationSupport.findAnnotation(
                 context.getRequiredTestMethod(),
                 User.class

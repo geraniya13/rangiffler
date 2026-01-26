@@ -1,8 +1,7 @@
-package io.student.rangiffler.test.ui;
+package io.student.rangiffler.tests.ui;
 
 import io.student.rangiffler.annotation.User;
 import io.student.rangiffler.model.UserJson;
-import io.student.rangiffler.ui.page.BasePage.*;
 import io.student.rangiffler.ui.page.auth.BaseAuthPage;
 import io.student.rangiffler.ui.page.auth.LoginAuthPage;
 import io.student.rangiffler.ui.page.auth.RegisterAuthPage;
@@ -25,7 +24,7 @@ public class AuthTest extends BaseUiTest {
                 .verifySuccess();
     }
 
-    @User()
+    @User
     @Test
     @DisplayName("User should be able to login with correct data")
     public void userShouldBeAbleToLoginWithCorrectData(UserJson user) {
