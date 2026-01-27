@@ -63,6 +63,7 @@ dependencies {
     testImplementation "p6spy:p6spy:${p6spyVersion}"
     testImplementation "org.hibernate:hibernate-core:${hibernateVersion}"
     testImplementation "org.springframework.security:spring-security-crypto:${springCryptoVersion}"
+    runtimeOnly "mysql:mysql-connector-java:${project.ext.mysqlDriverVersion}"
     // Allure
     testImplementation "io.qameta.allure:allure-attachments:${allureVersion}"
     testImplementation("io.qameta.allure:allure-junit5:${allureVersion}") {
@@ -98,8 +99,8 @@ dependencies {
     // Wiremock
     testImplementation "org.wiremock:wiremock:${project.ext.wiremockVersion}"
     // Lombok
-    testAnnotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
-    testCompileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
 }
 
 tasks.withType(JavaCompile).configureEach {
