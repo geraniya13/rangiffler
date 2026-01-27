@@ -7,11 +7,11 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 
 public class LoginAuthPage extends BaseAuthPage {
-    private static final String LOGIN_URL = "login";
+    private static final String LOGIN_PATH = "login";
     public static final String WRONG_CREDENTIALS = "Неверные учетные данные пользователя";
 
     public static LoginAuthPage open() {
-        return Selenide.open(String.format("%s%s", AUTH_URL, LOGIN_URL), LoginAuthPage.class);
+        return Selenide.open(String.format("%s%s", AUTH_URL, LOGIN_PATH), LoginAuthPage.class);
     }
 
     public MainPage login(String name, String password) {
