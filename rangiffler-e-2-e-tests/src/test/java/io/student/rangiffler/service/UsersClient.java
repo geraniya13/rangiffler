@@ -4,4 +4,6 @@ import io.student.rangiffler.model.UserJson;
 
 public interface UsersClient {
     UserJson createUser(String username, String password);
+
+    void deleteUser(String username);
 }

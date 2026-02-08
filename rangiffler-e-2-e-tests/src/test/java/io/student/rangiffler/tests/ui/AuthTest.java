@@ -2,16 +2,16 @@ package io.student.rangiffler.tests.ui;
 
 import io.student.rangiffler.annotation.User;
 import io.student.rangiffler.model.UserJson;
-import io.student.rangiffler.ui.page.auth.BaseAuthPage;
-import io.student.rangiffler.ui.page.auth.LoginAuthPage;
-import io.student.rangiffler.ui.page.auth.RegisterAuthPage;
+import io.student.rangiffler.ui.pages.auth.BaseAuthPage;
+import io.student.rangiffler.ui.pages.auth.LoginAuthPage;
+import io.student.rangiffler.ui.pages.auth.RegisterAuthPage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.student.rangiffler.extension.UserExtension.PASSWORD;
-import static io.student.rangiffler.ui.page.auth.LoginAuthPage.WRONG_CREDENTIALS;
-import static io.student.rangiffler.ui.page.auth.RegisterAuthPage.DIF_PASSWORDS;
-import static io.student.rangiffler.ui.page.auth.RegisterAuthPage.SHORT_PASSWORD;
+import static io.student.rangiffler.ui.pages.auth.LoginAuthPage.WRONG_CREDENTIALS;
+import static io.student.rangiffler.ui.pages.auth.RegisterAuthPage.DIF_PASSWORDS;
+import static io.student.rangiffler.ui.pages.auth.RegisterAuthPage.SHORT_PASSWORD;
 
 public class AuthTest extends BaseUiTest {
     @Test
