@@ -7,14 +7,16 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 
 
-public class PeopleElement extends PageElement {
+public class PeopleElement {
+    protected final SelenideElement element;
+
     private final ElementsCollection cells;
 
     private final SelenideElement actions;
 
     public PeopleElement(SelenideElement element) {
-        super(element);
-        this.cells = findAll("td");
+        this.element = element;
+        this.cells = element.$$("td");
         this.actions = element.lastChild();
     }
 

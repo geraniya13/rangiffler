@@ -1,6 +1,7 @@
 package io.student.rangiffler.ui.pages;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import io.student.rangiffler.enums.Action;
 import io.student.rangiffler.enums.PeopleTab;
@@ -15,15 +16,19 @@ import static com.codeborne.selenide.Selectors.byAttribute;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class PeoplePage extends BasePage {
+public class PeoplePage {
     private static final String PEOPLE_URL = "/people";
 
     private final SelenideElement searchInput = $("input[placeholder='Search people']"),
             searchButton = $(byAttribute("data-testid", "SearchIcon")),
-            peopleTable = $(".MuiTableBody-root");
+            peopleTable = $("table[aria-labelledby='tableTitle']");
 
     private final ElementsCollection tabButtons = $$("button[type='button'][role ='tab']"),
             peopleElements = $$("tbody tr");
+
+    public static PeoplePage open() {
+        return Selenide.open(PEOPLE_URL, PeoplePage.class);
+    }
 
     public PeoplePage goToPeopleTab(PeopleTab tab) {
         tabButtons
@@ -34,7 +39,7 @@ public class PeoplePage extends BasePage {
 
     public List<PeopleElement> getPeopleElements() {
         peopleTable.shouldBe(visible);
-        return generatePageElements(peopleElements, PeopleElement::new);
+        return peopleElements.stream().map(PeopleElement::new).toList();
     }
 
     public PeoplePage searchPerson(String person) {

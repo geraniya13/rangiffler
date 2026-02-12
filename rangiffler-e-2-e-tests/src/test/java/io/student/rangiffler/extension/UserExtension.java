@@ -1,6 +1,7 @@
 package io.student.rangiffler.extension;
 
 
+import com.github.javafaker.Faker;
 import io.student.rangiffler.annotation.User;
 import io.student.rangiffler.model.UserJson;
 import io.student.rangiffler.service.UsersClient;
@@ -9,11 +10,16 @@ import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 
-public class UserExtension extends BasicExtension implements BeforeEachCallback,
+public class UserExtension implements BeforeEachCallback,
         AfterEachCallback,
         ParameterResolver {
 
     private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UserExtension.class);
+
+    private static final Faker faker = new Faker();
+
+    public final static String PASSWORD = faker.lorem().characters(6, true, true),
+            USERNAME = faker.name().username();
 
     private final UsersClient usersClient = new UsersDbClient();
 

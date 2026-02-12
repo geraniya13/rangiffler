@@ -12,11 +12,13 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-public class UsersQueueExtension extends BasicExtension implements BeforeEachCallback,
+public class UsersQueueExtension implements BeforeEachCallback,
         AfterEachCallback,
         ParameterResolver {
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UsersQueueExtension.class);
+
+    public final static String HARDCODED_PASSWORD = "123456";
 
     private static final Queue<StaticUser> EMPTY_USERS = new ConcurrentLinkedQueue<>(),
             WITH_FRIEND_USERS = new ConcurrentLinkedQueue<>(),
@@ -40,18 +42,23 @@ public class UsersQueueExtension extends BasicExtension implements BeforeEachCal
                             Optional<StaticUser> user = Optional.empty();
                             StopWatch stopWatch = StopWatch.createStarted();
                             while (user.isEmpty() && stopWatch.getTime(TimeUnit.SECONDS) < 30) {
-                                user = Optional.ofNullable(getQueue(ut).poll());
+                                user = Optional.ofNullable(getQueue(ut.value()).poll());
                             }
-                            Allure.getLifecycle().updateTestCase(testCase -> {
-                                testCase.setStart(new Date().getTime());
-                            });
                             user.ifPresentOrElse(
                                     u -> {
-                                        ((Map<UserType, StaticUser>) context.getStore(NAMESPACE)
+                                        Map<UserType.Type, Queue<StaticUser>> map = ((Map<UserType.Type, Queue<StaticUser>>) context.getStore(NAMESPACE)
                                                 .getOrComputeIfAbsent(
                                                         context.getUniqueId(),
                                                         key -> new HashMap<>()
-                                                )).put(ut, u);
+                                                ));
+                                        if (!map.containsKey(ut.value())) {
+                                            Queue<StaticUser> queue = new ConcurrentLinkedQueue<>();
+                                            queue.add(u);
+                                            map.put(ut.value(), new ConcurrentLinkedQueue<>());
+                                        }
+                                        Queue<StaticUser> queue = map.get(ut.value());
+                                        queue.add(u);
+                                        map.put(ut.value(), queue);
                                     },
                                     () -> {
                                         throw new IllegalStateException("Can't find user after 30 seconds");
@@ -63,11 +70,12 @@ public class UsersQueueExtension extends BasicExtension implements BeforeEachCal
 
     @Override
     public void afterEach(ExtensionContext context) {
-        Map<UserType, StaticUser> map = context.getStore(NAMESPACE).get(
+        Map<UserType.Type, Queue<StaticUser>> map = context.getStore(NAMESPACE).get(
                 context.getUniqueId(),
                 Map.class);
-        for (Map.Entry<UserType, StaticUser> e : map.entrySet()) {
-            getQueue(e.getKey()).add(e.getValue());
+        for (Map.Entry<UserType.Type, Queue<StaticUser>> e : map.entrySet()) {
+            Queue<StaticUser> queue = e.getValue();
+            queue.forEach(u -> getQueue(e.getKey()).add(u));
         }
     }
 
@@ -83,18 +91,23 @@ public class UsersQueueExtension extends BasicExtension implements BeforeEachCal
                 .findAnnotation(UserType.class)
                 .orElseThrow();
 
-        return ((Map<UserType, StaticUser>) extensionContext
+        Map<UserType.Type, Queue<StaticUser>> map = ((Map<UserType.Type, Queue<StaticUser>>) extensionContext
                 .getStore(NAMESPACE)
-                .get(extensionContext.getUniqueId())).entrySet()
-                .stream()
-                .filter(e -> e.getKey().value() == ut.value())
-                .findFirst()
-                .orElseThrow()
-                .getValue();
+                .get(extensionContext.getUniqueId()));
+
+        Queue<StaticUser> queue = map.get(ut.value());
+
+        StaticUser user = queue.poll();
+
+        queue.add(user);
+
+        map.put(ut.value(), queue);
+
+        return user;
     }
 
-    private Queue<StaticUser> getQueue(UserType ut) {
-        return switch (ut.value()) {
+    private Queue<StaticUser> getQueue(UserType.Type ut) {
+        return switch (ut) {
             case EMPTY -> EMPTY_USERS;
             case WITH_FRIEND -> WITH_FRIEND_USERS;
             case WITH_INCOME_REQUEST -> WITH_INCOME_REQUEST_USERS;

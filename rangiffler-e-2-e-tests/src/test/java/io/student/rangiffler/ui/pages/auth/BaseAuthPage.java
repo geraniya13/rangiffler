@@ -2,12 +2,15 @@ package io.student.rangiffler.ui.pages.auth;
 
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import io.student.rangiffler.ui.pages.BasePage;
 
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
-public class BaseAuthPage extends BasePage {
+public class BaseAuthPage {
+    public static <T extends BaseAuthPage> T open(String url, Class<T> pageClass) {
+        return Selenide.open(url, pageClass);
+    }
+
     protected static final String AUTH_URL = "http://localhost:9002/";
 
     private final SelenideElement loginButton = $(byText("Login")),

@@ -8,12 +8,16 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byAttribute;
 import static com.codeborne.selenide.Selenide.$;
 
-public class MainPage extends BasePage {
+public class MainPage {
     private static final String MAIN_URL = "/my-travels";
 
     private final SelenideElement map = $("figure.worldmap__figure-container"),
             logoutButton = $("button[aria-label='Logout']"),
             peopleButton = $(byAttribute("data-testid","PersonSearchRoundedIcon"));
+
+    public static MainPage open() {
+        return Selenide.open(MAIN_URL, MainPage.class);
+    }
 
     public MainPage assertMapIsVisible() {
         map.shouldBe(visible);
