@@ -1,7 +1,7 @@
-package io.student.rangiffler.ui.page.auth;
+package io.student.rangiffler.ui.pages.auth;
 
 import com.codeborne.selenide.Selenide;
-import io.student.rangiffler.ui.page.MainPage;
+import io.student.rangiffler.ui.pages.MainPage;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;

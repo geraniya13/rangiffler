@@ -10,12 +10,16 @@ import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 
-public class UserExtension implements BeforeEachCallback, ParameterResolver {
-    private static final Faker faker = new Faker();
-
-    public final static String PASSWORD = faker.lorem().characters(6, true, true);
+public class UserExtension implements BeforeEachCallback,
+        AfterEachCallback,
+        ParameterResolver {
 
     private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UserExtension.class);
+
+    private static final Faker faker = new Faker();
+
+    public final static String PASSWORD = faker.lorem().characters(6, true, true),
+            USERNAME = faker.name().username();
 
     private final UsersClient usersClient = new UsersDbClient();
 
@@ -28,10 +32,16 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
                 anno -> {
                     context.getStore(NAMESPACE).put(
                             context.getUniqueId(),
-                            usersClient.createUser(faker.name().username(), PASSWORD)
+                            usersClient.createUser(USERNAME, PASSWORD)
                     );
                 }
         );
+    }
+
+    @Override
+    public void afterEach(ExtensionContext context) {
+        UserJson user = context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
+        usersClient.deleteUser(user.data().user().username());
     }
 
     @Override

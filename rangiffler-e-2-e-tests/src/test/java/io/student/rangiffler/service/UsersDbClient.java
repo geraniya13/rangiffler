@@ -29,6 +29,14 @@ public class UsersDbClient implements UsersClient {
                             INSERT INTO `rangiffler-auth`.authority 
                             (id, user_id, authority)
                             VALUES (UUID_TO_BIN(?, true),UUID_TO_BIN(?, true),?);
+                    """,
+            DELETE_USER_SQL = """
+                        DELETE FROM `rangiffler-auth`.`user`
+                        WHERE username = ?;
+                    """,
+            DELETE_AUTHORITIES_SQL = """
+                    DELETE FROM `rangiffler-auth`.`authority`
+                    WHERE user_id = (SELECT id FROM `rangiffler-auth`.`user` WHERE username = ?);
                     """;
 
     @Override
@@ -48,6 +56,25 @@ public class UsersDbClient implements UsersClient {
             insertAuthorities(jdbcTemplate, uuid, Authority.read, Authority.write);
 
             return createUserJson(uuid, userName);
+
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public void deleteUser(String userName) {
+        try {
+            final JdbcTemplate jdbcTemplate = new JdbcTemplate(new SingleConnectionDataSource(
+                    DriverManager.getConnection(
+                            CFG.authJdbcUrl(),
+                            CFG.dbUsername(),
+                            CFG.dbPassword()
+                    ),
+                    true)
+            );
+
+            deleteUserWithAuthorities(jdbcTemplate, userName);
 
         } catch (Exception e) {
             throw new RuntimeException();
@@ -85,6 +112,12 @@ public class UsersDbClient implements UsersClient {
                     authority.toString()
             );
         }
+    }
+
+    private void deleteUserWithAuthorities(JdbcTemplate jdbcTemplate, String username) {
+        jdbcTemplate.update(DELETE_AUTHORITIES_SQL, username);
+
+        jdbcTemplate.update(DELETE_USER_SQL, username);
     }
 
     private UserJson createUserJson(String uuid, String userName) {
