@@ -33,8 +33,8 @@ public class UserEntity {
     private byte[] avatar;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "country_id")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "country_id", nullable = false, columnDefinition = "BINARY(16)")
     private CountryEntity country;
 
     public User toDto() {
@@ -43,7 +43,11 @@ public class UserEntity {
                 .username(this.getUsername())
                 .firstname(this.getFirstname())
                 .surname(this.getLastName())
-                .avatar("data:image/png;base64," + Base64.getEncoder().encodeToString(this.getAvatar()))
+                .avatar(
+                        this.getAvatar() == null
+                                ? null
+                                : "data:image/png;base64," + Base64.getEncoder().encodeToString(this.getAvatar())
+                )
                 .location(this.getCountry().toDto())
                 .build();
     }

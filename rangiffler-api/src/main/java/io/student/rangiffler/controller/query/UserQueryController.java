@@ -1,12 +1,10 @@
 package io.student.rangiffler.controller.query;
 
-import io.student.rangiffler.model.Photo;
 import io.student.rangiffler.model.User;
 import io.student.rangiffler.service.UserService;
 import io.student.rangiffler.utils.GqlQueryPaginationAndSort;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -33,7 +31,7 @@ public class UserQueryController {
 
     @QueryMapping
     public User user(@AuthenticationPrincipal Jwt principal) {
-        final String principalUsername = principal.getClaim("sub");
+        final String principalUsername = principal.getClaimAsString("sub");
         return userService.getUser(principalUsername);
     }
 

@@ -20,8 +20,8 @@ public class CorsCustomizer {
     private final String frontUri;
 
     @Autowired
-    public CorsCustomizer(@Value("${rangiffler-front.base-uri}") String frontUri, CorsConfigurationSource corsConfigurationSource) {
-        this.frontUri = frontUri;
+    public CorsCustomizer(@Value("${rangiffler-front.base-uri}") String frontUri) {
+            this.frontUri = frontUri;
     }
 
     public Set<String> allowedOrigins() {
