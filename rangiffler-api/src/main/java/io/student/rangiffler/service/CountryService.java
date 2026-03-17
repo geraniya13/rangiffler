@@ -1,33 +1,23 @@
 package io.student.rangiffler.service;
 
-import io.student.rangiffler.data.entity.CountryEntity;
 import io.student.rangiffler.data.repository.CountryRepository;
 import io.student.rangiffler.model.Country;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class CountryService {
 
     private final CountryRepository countryRepository;
 
-    @Autowired
-    public CountryService(CountryRepository countryRepository) {
-        this.countryRepository = countryRepository;
-    }
-
     public List<Country> getAllCountries() {
-        //                            return new Country(
-        //                                    countryEntity.getCode(),
-        //                                    countryEntity.getName(),
-        //                                    Base64.getEncoder().encodeToString(countryEntity.getFlag())
-        //                            );
         return countryRepository.findAll()
                 .stream()
-                .map(CountryEntity::toDto
-                ).toList();
+                .map(Country::toDto)
+                .toList();
     }
 }

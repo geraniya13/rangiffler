@@ -1,5 +1,7 @@
 package io.student.rangiffler.model;
 
+import io.student.rangiffler.data.entity.UserEntity;
+import io.student.rangiffler.utils.PhotoDecoder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -61,4 +63,15 @@ public class User {
   public int hashCode() {
     return Objects.hash(id, username, firstname, surname, avatar, friendStatus, friends, incomeInvitations, outcomeInvitations, location);
   }
+
+    public static User toDto(UserEntity userEntity) {
+        return User.builder()
+                .id(userEntity.getId())
+                .username(userEntity.getUsername())
+                .firstname(userEntity.getFirstname())
+                .surname(userEntity.getLastname())
+                .avatar(PhotoDecoder.encodeDataUriBase64(userEntity.getAvatar()))
+                .location(Country.toDto(userEntity.getCountry()))
+                .build();
+    }
 }

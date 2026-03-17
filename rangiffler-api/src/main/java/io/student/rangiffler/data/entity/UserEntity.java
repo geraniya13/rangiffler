@@ -1,15 +1,15 @@
 package io.student.rangiffler.data.entity;
 
-import io.student.rangiffler.model.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.Base64;
 import java.util.UUID;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "user")
 public class UserEntity {
@@ -26,7 +26,7 @@ public class UserEntity {
 
 
     @Column
-    private String lastName;
+    private String lastname;
 
     @Lob
     @Column(columnDefinition = "LONGBLOB")
@@ -36,19 +36,4 @@ public class UserEntity {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "country_id", nullable = false, columnDefinition = "BINARY(16)")
     private CountryEntity country;
-
-    public User toDto() {
-        return User.builder()
-                .id(this.getId())
-                .username(this.getUsername())
-                .firstname(this.getFirstname())
-                .surname(this.getLastName())
-                .avatar(
-                        this.getAvatar() == null
-                                ? null
-                                : "data:image/png;base64," + Base64.getEncoder().encodeToString(this.getAvatar())
-                )
-                .location(this.getCountry().toDto())
-                .build();
-    }
 }

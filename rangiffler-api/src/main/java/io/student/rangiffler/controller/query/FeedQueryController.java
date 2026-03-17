@@ -1,7 +1,9 @@
 package io.student.rangiffler.controller.query;
 
 import io.student.rangiffler.model.*;
+import io.student.rangiffler.service.FeedService;
 import io.student.rangiffler.utils.GqlQueryPaginationAndSort;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -17,7 +19,11 @@ import java.util.List;
 
 @Controller
 @PreAuthorize("isAuthenticated()")
+@RequiredArgsConstructor
 public class FeedQueryController {
+
+    private final FeedService feedService;
+
     @SchemaMapping(typeName = "Feed", field = "stat")
     public List<Stat> stat(Feed feed) {
         return List.of(new Stat());
@@ -25,7 +31,7 @@ public class FeedQueryController {
 
     @SchemaMapping(typeName = "Photo", field = "likes")
     public Likes likes(Photo photo) {
-        return new Likes();
+        return feedService.getLikes(photo);
     }
 
     @SchemaMapping(typeName = "User", field = "photos")
@@ -59,6 +65,7 @@ public class FeedQueryController {
     @QueryMapping
     public Feed feed(@AuthenticationPrincipal Jwt principal,
                      @Argument boolean withFriends) {
+        final String principalUsername = principal.getClaimAsString("sub");
         return new Feed();
     }
 }

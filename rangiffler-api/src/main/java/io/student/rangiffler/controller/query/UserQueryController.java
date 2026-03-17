@@ -4,7 +4,7 @@ import io.student.rangiffler.model.User;
 import io.student.rangiffler.service.UserService;
 import io.student.rangiffler.utils.GqlQueryPaginationAndSort;
 import jakarta.annotation.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -20,14 +20,10 @@ import java.util.List;
 
 @Controller
 @PreAuthorize("isAuthenticated()")
+@RequiredArgsConstructor
 public class UserQueryController {
 
     private final UserService userService;
-
-    @Autowired
-    public UserQueryController(UserService userService) {
-        this.userService = userService;
-    }
 
     @QueryMapping
     public User user(@AuthenticationPrincipal Jwt principal) {

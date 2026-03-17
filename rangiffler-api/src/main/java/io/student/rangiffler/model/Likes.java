@@ -14,26 +14,26 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Likes {
-  private int total;
+    private int total;
 
-  private List<Like> likes;
+    private List<Like> likes;
 
-  @Override
-  public String toString() {
-    return "Likes{total='" + total + "', likes='" + likes + "'}";
-  }
+    @Override
+    public String toString() {
+        return "Likes{total='" + total + "', likes='" + likes + "'}";
+    }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Likes that = (Likes) o;
-    return total == that.total &&
-        Objects.equals(likes, that.likes);
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Likes that = (Likes) o;
+        return total == that.total &&
+                Objects.equals(likes, that.likes);
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(total, likes);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(total, likes);
+    }
 }

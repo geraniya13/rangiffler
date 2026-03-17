@@ -1,5 +1,7 @@
 package io.student.rangiffler.model;
 
+import io.student.rangiffler.data.entity.PhotoEntity;
+import io.student.rangiffler.utils.PhotoDecoder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -51,4 +53,16 @@ public class Photo {
   public int hashCode() {
     return Objects.hash(id, src, country, description, creationDate, likes, isOwner);
   }
+
+    public Photo toDto(PhotoEntity photoEntity) {
+        return Photo.builder()
+                .id(photoEntity.getId())
+                .src(PhotoDecoder.encodeDataUriBase64(photoEntity.getPhoto()))
+                .country(Country.toDto(photoEntity.getCountry()))
+                .description(photoEntity.getDescription())
+                .creationDate(photoEntity.getCreatedDate().toLocalDate())
+                .likes(new Likes())
+                .isOwner(true)
+                .build();
+    }
 }
