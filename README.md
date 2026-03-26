@@ -72,11 +72,11 @@ Dmitriis-MacBook-Pro rangiffler-client % npm run dev
 
 ```posh
 docker pull wiremock/wiremock:2.35.0
-docker run --name rangiffler-mock -p 8080:8080 -v ./wiremock/rest:/home/wiremock -d wiremock/wiremock:2.35.0 --global-response-templating --enable-stub-cors
+docker run --name rangiffler-mock -p 8085:8085 -v ./wiremock/rest:/home/wiremock -d wiremock/wiremock:2.35.0 --global-response-templating --enable-stub-cors
 ```
   Эти команды надо запускать в корне проекта, там же есть скрипт `wiremock.sh`, делающий ровно то же самое. Можно просто запустить его.
 
-  Wiremock стартанет на порту 8080: http://localhost:8080/ и будет готов отдавать тебе статические ответы на все GraphQL query/mutations, уходящие
+  Wiremock стартанет на порту 8085: http://localhost:8085/ и будет готов отдавать тебе статические ответы на все GraphQL query/mutations, уходящие
 с фронта rangiffler. Кнопка "Войти" пока что не работает, что логично, ведь у нас нет сервиса auth.
 Однако, наш Wiremock понимает некоторые запросы с oauth token, при чем ему не важно - какой именно это токен.
 Поэтому, что бы смоделировать ситуация "я залогинился", то просто зайди в dev tools браузера,

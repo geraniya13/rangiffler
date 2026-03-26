@@ -1,4 +1,4 @@
-for port in 9002 8080 3001; do
+for port in 9002 8085 3001; do
   pid=$(lsof -ti tcp:$port)
   if [ -n "$pid" ]; then
     echo "Killing process $pid on port $port"
