@@ -1,15 +1,21 @@
 package io.student.rangiffler.service;
 
 import io.student.rangiffler.data.entity.CountryEntity;
+import io.student.rangiffler.data.entity.FriendshipEntity;
+import io.student.rangiffler.data.entity.PhotoLikeEntity;
 import io.student.rangiffler.data.entity.UserEntity;
 import io.student.rangiffler.data.repository.CountryRepository;
+import io.student.rangiffler.data.repository.FriendshipRepository;
 import io.student.rangiffler.data.repository.UserRepository;
-import io.student.rangiffler.model.User;
-import io.student.rangiffler.model.UserInput;
+import io.student.rangiffler.model.*;
 import io.student.rangiffler.utils.PhotoDecoder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,6 +25,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final CountryRepository countryRepository;
+    private final FriendshipRepository friendshipRepository;
 
     public User getUser(String username) {
         Optional<User> user = userRepository.findByUsername(username)
@@ -69,5 +76,46 @@ public class UserService {
             userRepository.save(userEntity);
 
             return User.toDto(userEntity);
+    }
+
+    public User updateFriendship(String username, FriendshipInput friendshipInput) {
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Username: %s not found".formatted(username)));
+
+        UserEntity friendUser = userRepository.findById(friendshipInput.getUser())
+                .orElseThrow(() -> new IllegalArgumentException("Friend username: %s not found".formatted(username)));
+
+        FriendshipEntity friendshipEntity = new FriendshipEntity();
+
+        User friend = User.toDto(friendUser);
+
+        switch (friendshipInput.getAction()) {
+            case ADD:
+                friendshipEntity.setStatus(FriendshipStatus.PENDING);
+                friendshipEntity.setRequester(user);
+                friendshipEntity.setAddressee(friendUser);
+                friendshipRepository.save(friendshipEntity);
+                friend.setFriendStatus(FriendStatus.INVITATION_SENT);
+                break;
+            case DELETE:
+
+
+        }
+
+
+
+
+        return friend;
+    }
+
+    public Slice<User> getAllUsers(String username, Pageable pageable, String searchQuery) {
+        userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Username: %s not found".formatted(username)));
+
+
+        return searchQuery == null ? userRepository.findByUsernameNot(username, pageable)
+                .map(User::toDto)
+                : userRepository.findByUsernameNotAndSearchQuery(username, pageable, searchQuery)
+                        .map(User::toDto);
     }
 }

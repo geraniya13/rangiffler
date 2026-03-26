@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
+import java.util.UUID;
 
 
 @Builder
@@ -13,7 +14,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FriendshipInput {
-  private String user;
+  private UUID user;
 
   private FriendshipAction action;
 

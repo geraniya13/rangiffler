@@ -1,6 +1,7 @@
 package io.student.rangiffler.data.entity;
 
 import io.student.rangiffler.model.FriendshipEntityId;
+import io.student.rangiffler.model.FriendshipStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,5 +31,6 @@ public class FriendshipEntity {
     private LocalDateTime createdDate;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private FriendshipStatus status;
 }

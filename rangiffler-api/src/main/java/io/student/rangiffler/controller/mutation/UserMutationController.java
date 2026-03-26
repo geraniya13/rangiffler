@@ -28,6 +28,7 @@ public class UserMutationController {
     @MutationMapping
     public User friendship(@AuthenticationPrincipal Jwt principal,
                            @Argument FriendshipInput input) {
+        final String principalUsername = principal.getClaimAsString("sub");
         return User.builder().username("MockUser").build();
     }
 }

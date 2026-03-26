@@ -82,12 +82,14 @@ public class UserQueryController {
                              @Argument int size,
                              @Argument @Nullable String searchQuery) {
 
+        final String principalUsername = principal.getClaimAsString("sub");
+
         Pageable pageable = new GqlQueryPaginationAndSort(page, size).pageable();
 
-        return new SliceImpl<>(
-                List.of(new User()),
+        return userService.getAllUsers(
+                principalUsername,
                 pageable,
-                false
+                searchQuery
         );
 
     }
