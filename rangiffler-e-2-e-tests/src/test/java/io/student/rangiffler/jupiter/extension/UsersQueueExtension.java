@@ -1,8 +1,7 @@
-package io.student.rangiffler.extension;
+package io.student.rangiffler.jupiter.extension;
 
 
-import io.qameta.allure.Allure;
-import io.student.rangiffler.annotation.UserType;
+import io.student.rangiffler.jupiter.annotation.UserType;
 import io.student.rangiffler.model.StaticUser;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.extension.*;

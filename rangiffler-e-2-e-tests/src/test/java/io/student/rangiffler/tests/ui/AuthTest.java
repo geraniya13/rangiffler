@@ -1,6 +1,7 @@
 package io.student.rangiffler.tests.ui;
 
-import io.student.rangiffler.annotation.User;
+import io.student.rangiffler.jupiter.annotation.CloseConnections;
+import io.student.rangiffler.jupiter.annotation.User;
 import io.student.rangiffler.model.UserJson;
 import io.student.rangiffler.ui.pages.auth.BaseAuthPage;
 import io.student.rangiffler.ui.pages.auth.LoginAuthPage;
@@ -8,11 +9,12 @@ import io.student.rangiffler.ui.pages.auth.RegisterAuthPage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static io.student.rangiffler.extension.UserExtension.PASSWORD;
+import static io.student.rangiffler.jupiter.extension.UserExtension.PASSWORD;
 import static io.student.rangiffler.ui.pages.auth.LoginAuthPage.WRONG_CREDENTIALS;
 import static io.student.rangiffler.ui.pages.auth.RegisterAuthPage.DIF_PASSWORDS;
 import static io.student.rangiffler.ui.pages.auth.RegisterAuthPage.SHORT_PASSWORD;
 
+@CloseConnections
 public class AuthTest extends BaseUiTest {
     @Test
     @DisplayName("User should be able to register with correct data")

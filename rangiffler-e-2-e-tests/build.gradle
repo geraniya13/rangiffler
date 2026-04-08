@@ -21,6 +21,7 @@ buildscript {
         userdataWsdlUrl = System.getProperty("test.env") == "docker"
                 ? "http://userdata.niffler.dc:8085/ws/userdata.wsdl"
                 : "http://localhost:8085/ws/userdata.wsdl"
+        atomicosVersion = '6.0.0'
     }
 }
 
@@ -64,6 +65,9 @@ dependencies {
     testImplementation "org.hibernate:hibernate-core:${hibernateVersion}"
     testImplementation "org.springframework.security:spring-security-crypto:${springCryptoVersion}"
     runtimeOnly "mysql:mysql-connector-java:${project.ext.mysqlDriverVersion}"
+    testImplementation "com.atomikos:transactions-jta:${atomicosVersion}:jakarta"
+    testImplementation "com.atomikos:transactions-hibernate4:${atomicosVersion}:jakarta"
+    testImplementation "com.atomikos:transactions-jdbc:${atomicosVersion}"
     // Allure
     testImplementation "io.qameta.allure:allure-attachments:${allureVersion}"
     testImplementation("io.qameta.allure:allure-junit5:${allureVersion}") {
@@ -99,8 +103,8 @@ dependencies {
     // Wiremock
     testImplementation "org.wiremock:wiremock:${project.ext.wiremockVersion}"
     // Lombok
-    annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
-    compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
 }
 
 tasks.withType(JavaCompile).configureEach {
