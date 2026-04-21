@@ -6,6 +6,6 @@ public class DatabasesExtension implements SuiteExtension {
 
     @Override
     public void afterSuite() {
-        DataBases.closeAllConnections();
+//        DataBases.closeAllConnections();
     }
 }

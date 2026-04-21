@@ -23,7 +23,6 @@ public class DataBases {
     }
 
     private static final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
-    private static final Map<Long, Map<String, Connection>> threadConnections = new ConcurrentHashMap<>();
 
     public record XaFunction<T>(Function<Connection, T> function, String jdbcUrl) {
     }
@@ -53,30 +52,12 @@ public class DataBases {
         );
     }
 
-
     private static Connection connection(String jdbcUrl) {
-        return threadConnections.computeIfAbsent(
-                Thread.currentThread().threadId(),
-                key -> {
-                    try {
-                        return new HashMap<>(Map.of(
-                                jdbcUrl,
-                                dataSource(jdbcUrl).getConnection()
-                        ));
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        ).computeIfAbsent(
-                jdbcUrl,
-                key -> {
-                    try {
-                        return dataSource(jdbcUrl).getConnection();
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        );
+        try {
+            return dataSource(jdbcUrl).getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get connection for " + jdbcUrl, e);
+        }
     }
 
     public static <T> T transaction(Function<Connection, T> action, String jdbcUrl, int isolationLevel) {
@@ -98,6 +79,13 @@ public class DataBases {
                 throw e;
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
+            }
+        } finally {
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
             }
         }
     }
@@ -122,16 +110,29 @@ public class DataBases {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
+        } finally {
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+            }
         }
     }
 
     public static <T> T xaTransaction(int isolationLevel, XaFunction<T>... actions) {
         UserTransaction ut = new UserTransactionImp();
+        Map<String, Connection> connections = new HashMap<>();
+
         try {
             ut.begin();
             T result = null;
             for (XaFunction<T> action : actions) {
-                var connection = connection(action.jdbcUrl());
+                var connection = connections.
+                        computeIfAbsent(
+                                action.jdbcUrl(),
+                                DataBases::connection);
+
                 connection.setTransactionIsolation(isolationLevel);
                 result = action.function().apply(connection);
             }
@@ -144,15 +145,23 @@ public class DataBases {
                 throw new RuntimeException(ex);
             }
             throw new RuntimeException(e);
+        } finally {
+            closeAllConnections(connections);
         }
     }
 
     public static void xaTransaction(int isolationLevel, XaConsumer... consumers) {
         UserTransaction ut = new UserTransactionImp();
+        Map<String, Connection> connections = new HashMap<>();
+
         try {
             ut.begin();
             for (XaConsumer consumer : consumers) {
-                var connection = connection(consumer.jdbcUrl());
+                var connection = connections.
+                        computeIfAbsent(
+                                consumer.jdbcUrl(),
+                                DataBases::connection);
+
                 connection.setTransactionIsolation(isolationLevel);
                 consumer.consumer.accept(connection);
             }
@@ -164,19 +173,19 @@ public class DataBases {
                 throw new RuntimeException(ex);
             }
             throw new RuntimeException(e);
+        } finally {
+            closeAllConnections(connections);
         }
     }
 
 
-    public static void closeAllConnections() {
-        for (Map<String, Connection> connectionMap : threadConnections.values()) {
-            for (Connection connection : connectionMap.values()) {
-                try {
-                    if (connection != null && !connection.isClosed()) {
-                        connection.close();
-                    }
-                } catch (SQLException e) {
+    public static void closeAllConnections(Map<String, Connection> connections) {
+        for (Connection connection : connections.values()) {
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
                 }
+            } catch (SQLException e) {
             }
         }
     }
