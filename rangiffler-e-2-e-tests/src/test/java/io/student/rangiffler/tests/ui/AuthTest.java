@@ -1,13 +1,17 @@
 package io.student.rangiffler.tests.ui;
 
+import io.student.rangiffler.data.entity.AuthorityEntity;
 import io.student.rangiffler.jupiter.annotation.CloseConnections;
 import io.student.rangiffler.jupiter.annotation.User;
 import io.student.rangiffler.model.UserJson;
+import io.student.rangiffler.service.UsersDbClient;
 import io.student.rangiffler.ui.pages.auth.BaseAuthPage;
 import io.student.rangiffler.ui.pages.auth.LoginAuthPage;
 import io.student.rangiffler.ui.pages.auth.RegisterAuthPage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static io.student.rangiffler.jupiter.extension.UserExtension.PASSWORD;
 import static io.student.rangiffler.ui.pages.auth.LoginAuthPage.WRONG_CREDENTIALS;
@@ -16,6 +20,21 @@ import static io.student.rangiffler.ui.pages.auth.RegisterAuthPage.SHORT_PASSWOR
 
 @CloseConnections
 public class AuthTest extends BaseUiTest {
+
+    @Test
+    @DisplayName("User should be able to register with correct data")
+    public void houldBeAbleToRegisterWithCorrectData() {
+        UsersDbClient usersDbClient = new UsersDbClient();
+        List<UserJson> userJsonList = usersDbClient.getAllUsers();
+        List<AuthorityEntity> authorityEntityList = usersDbClient.getAllAuthorities();
+        for (UserJson userJson : userJsonList) {
+            System.out.println(userJson.toString());
+        }
+        for (AuthorityEntity authorityEntity : authorityEntityList) {
+            System.out.println(authorityEntity.getId() + " " + authorityEntity.getAuthority() + " " + authorityEntity.getUser().getId());
+        }
+    }
+
     @Test
     @DisplayName("User should be able to register with correct data")
     public void userShouldBeAbleToRegisterWithCorrectData() {
