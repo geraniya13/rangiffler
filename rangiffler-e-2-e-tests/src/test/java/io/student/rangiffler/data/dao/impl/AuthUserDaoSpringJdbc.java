@@ -2,7 +2,7 @@ package io.student.rangiffler.data.dao.impl;
 
 import io.student.rangiffler.config.Config;
 import io.student.rangiffler.data.dao.AuthUserDao;
-import io.student.rangiffler.data.entity.UserEntity;
+import io.student.rangiffler.data.entity.auth.UserEntity;
 import io.student.rangiffler.mapper.UserEntityRowMapper;
 import io.student.rangiffler.tpl.DataSources;
 import org.springframework.dao.EmptyResultDataAccessException;

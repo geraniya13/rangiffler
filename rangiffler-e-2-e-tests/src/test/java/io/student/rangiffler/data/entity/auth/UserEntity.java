@@ -1,4 +1,4 @@
-package io.student.rangiffler.data.entity;
+package io.student.rangiffler.data.entity.auth;
 
 import jakarta.persistence.*;
 

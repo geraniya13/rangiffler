@@ -1,6 +1,6 @@
 package io.student.rangiffler.tests.ui;
 
-import io.student.rangiffler.data.entity.AuthorityEntity;
+import io.student.rangiffler.data.entity.auth.AuthorityEntity;
 import io.student.rangiffler.jupiter.annotation.CloseConnections;
 import io.student.rangiffler.jupiter.annotation.User;
 import io.student.rangiffler.model.UserJson;

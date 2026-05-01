@@ -1,6 +1,6 @@
 package io.student.rangiffler.mapper;
 
-import io.student.rangiffler.data.entity.UserEntity;
+import io.student.rangiffler.data.entity.auth.UserEntity;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

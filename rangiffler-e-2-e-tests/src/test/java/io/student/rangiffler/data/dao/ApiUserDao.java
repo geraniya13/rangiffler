@@ -1,7 +1,7 @@
 package io.student.rangiffler.data.dao;
 
-import io.student.rangiffler.data.entity.ApiUserEntity;
-import io.student.rangiffler.data.entity.CountryEntity;
+import io.student.rangiffler.data.entity.api.ApiUserEntity;
+import io.student.rangiffler.data.entity.api.CountryEntity;
 
 import java.util.List;
 import java.util.Optional;

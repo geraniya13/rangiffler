@@ -1,6 +1,6 @@
 package io.student.rangiffler.service;
 
-import io.student.rangiffler.data.entity.AuthorityEntity;
+import io.student.rangiffler.data.entity.auth.AuthorityEntity;
 import io.student.rangiffler.model.UserJson;
 
 import java.util.List;

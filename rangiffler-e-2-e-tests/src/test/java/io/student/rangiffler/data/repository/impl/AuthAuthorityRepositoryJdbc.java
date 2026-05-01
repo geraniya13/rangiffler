@@ -1,9 +1,8 @@
-package io.student.rangiffler.data.dao.impl;
+package io.student.rangiffler.data.repository.impl;
 
 import io.student.rangiffler.config.Config;
-import io.student.rangiffler.data.dao.AuthAuthorityDao;
 import io.student.rangiffler.data.entity.auth.AuthorityEntity;
-import io.student.rangiffler.data.entity.auth.UserEntity;
+import io.student.rangiffler.data.repository.AuthAuthorityRepository;
 import io.student.rangiffler.mapper.AuthorityEntityRowMapper;
 
 import java.sql.PreparedStatement;
@@ -15,7 +14,7 @@ import java.util.UUID;
 
 import static io.student.rangiffler.tpl.Connections.holder;
 
-public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
+public class AuthAuthorityRepositoryJdbc implements AuthAuthorityRepository {
     private final Config CFG = Config.getInstance();
 
     private final String CREATE_AUTHORITY_SQL =
@@ -52,10 +51,13 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public void delete(UserEntity userEntity) {
-        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(DELETE_AUTHORITY_SQL)) {
-            ps.setString(1, userEntity.getUsername());
-            ps.executeUpdate();
+    public void delete(AuthorityEntity... authority) {
+        try (PreparedStatement authorityPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(DELETE_AUTHORITY_SQL)) {
+            for (AuthorityEntity authorityEntity : authority) {
+                authorityPs.setString(1, authorityEntity.getUser().getUsername());
+                authorityPs.execute();
+            }
+
 
         } catch (SQLException e) {
             throw new RuntimeException("Authority deletion failed", e);

@@ -1,15 +1,14 @@
-package io.student.rangiffler.data.dao;
+package io.student.rangiffler.data.repository;
 
 import io.student.rangiffler.data.entity.auth.AuthorityEntity;
-import io.student.rangiffler.data.entity.auth.UserEntity;
 
 import java.util.List;
 
 
-public interface AuthAuthorityDao {
+public interface AuthAuthorityRepository {
     void create(AuthorityEntity... authority);
 
-    void delete(UserEntity user);
+    void delete(AuthorityEntity... authority);
 
     List<AuthorityEntity> findAll();
 }

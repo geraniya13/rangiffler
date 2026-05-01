@@ -1,13 +1,8 @@
-package io.student.rangiffler.data.entity;
+package io.student.rangiffler.data.entity.api;
 
-
-import io.student.rangiffler.enums.Authority;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -15,22 +10,35 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "authority")
-public class AuthorityEntity implements Serializable {
+@Table(name = "user")
+public class ApiUserEntity implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @JdbcTypeCode(SqlTypes.BINARY)
+    @GeneratedValue
     @Column(nullable = false, columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Authority authority;
+    private String username;
+
+    @Column
+    private String firstname;
+
+
+    @Column
+    private String lastname;
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] avatar;
+
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "country_id", nullable = false, columnDefinition = "BINARY(16)")
+    private CountryEntity country;
 
     @Override
     public final boolean equals(Object o) {
@@ -39,7 +47,7 @@ public class AuthorityEntity implements Serializable {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        AuthorityEntity that = (AuthorityEntity) o;
+        ApiUserEntity that = (ApiUserEntity) o;
         return getId() != null && Objects.equals(getId(), that.getId());
     }
 

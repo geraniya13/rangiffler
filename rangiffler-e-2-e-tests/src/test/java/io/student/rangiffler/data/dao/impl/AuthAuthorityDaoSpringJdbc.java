@@ -2,8 +2,8 @@ package io.student.rangiffler.data.dao.impl;
 
 import io.student.rangiffler.config.Config;
 import io.student.rangiffler.data.dao.AuthAuthorityDao;
-import io.student.rangiffler.data.entity.AuthorityEntity;
-import io.student.rangiffler.data.entity.UserEntity;
+import io.student.rangiffler.data.entity.auth.AuthorityEntity;
+import io.student.rangiffler.data.entity.auth.UserEntity;
 import io.student.rangiffler.mapper.AuthorityEntityRowMapper;
 import io.student.rangiffler.tpl.DataSources;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;

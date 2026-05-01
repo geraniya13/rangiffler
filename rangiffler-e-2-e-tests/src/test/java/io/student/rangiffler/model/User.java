@@ -1,6 +1,6 @@
 package io.student.rangiffler.model;
 
-import io.student.rangiffler.data.entity.ApiUserEntity;
+import io.student.rangiffler.data.entity.api.ApiUserEntity;
 
 import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;

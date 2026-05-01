@@ -2,8 +2,8 @@ package io.student.rangiffler.data.dao.impl;
 
 import io.student.rangiffler.config.Config;
 import io.student.rangiffler.data.dao.ApiUserDao;
-import io.student.rangiffler.data.entity.ApiUserEntity;
-import io.student.rangiffler.data.entity.CountryEntity;
+import io.student.rangiffler.data.entity.api.ApiUserEntity;
+import io.student.rangiffler.data.entity.api.CountryEntity;
 import io.student.rangiffler.mapper.ApiUserEntityRowMapper;
 import io.student.rangiffler.mapper.CountryEntityRowMapper;
 import io.student.rangiffler.tpl.DataSources;

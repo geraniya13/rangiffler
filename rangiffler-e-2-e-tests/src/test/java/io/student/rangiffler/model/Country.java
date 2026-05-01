@@ -1,6 +1,6 @@
 package io.student.rangiffler.model;
 
-import io.student.rangiffler.data.entity.CountryEntity;
+import io.student.rangiffler.data.entity.api.CountryEntity;
 
 import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
