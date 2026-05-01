@@ -3,7 +3,6 @@ package io.student.rangiffler.tpl;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class JdbcTransactionTemplate {
@@ -19,7 +18,7 @@ public class JdbcTransactionTemplate {
         return this;
     }
 
-    public <T> T transaction(Supplier<T> action, int isolationLevel) {
+    public <T> T execute(Supplier<T> action, int isolationLevel) {
         Connection connection = null;
         try {
             connection = connectionHolder.connection();
@@ -45,5 +44,9 @@ public class JdbcTransactionTemplate {
 
             }
         }
+    }
+
+    public <T> T execute(Supplier<T> action) {
+        return execute(action, Connection.TRANSACTION_READ_COMMITTED);
     }
 }

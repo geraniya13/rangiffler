@@ -6,7 +6,6 @@ import io.student.rangiffler.data.entity.AuthorityEntity;
 import io.student.rangiffler.data.entity.UserEntity;
 import io.student.rangiffler.mapper.AuthorityEntityRowMapper;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,7 +20,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
 
     private final String CREATE_AUTHORITY_SQL =
             """
-                            INSERT INTO `rangiffler-auth`.authority 
+                            INSERT INTO `rangiffler-auth`.`authority` 
                             (id, user_id, authority)
                             VALUES (UUID_TO_BIN(?, true),UUID_TO_BIN(?, true),?);
                     """,

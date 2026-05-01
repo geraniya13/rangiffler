@@ -15,6 +15,9 @@ public enum LocalConfig implements Config {
     }
 
     @Override
+    public String apiJdbcUrl() {return "jdbc:mysql://localhost:3306/rangiffler-api";}
+
+    @Override
     public String dbUsername() {
         return "root";
     }

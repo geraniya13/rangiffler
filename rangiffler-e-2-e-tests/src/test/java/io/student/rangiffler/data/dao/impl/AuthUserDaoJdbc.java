@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static io.student.rangiffler.tpl.Connections.holder;
 
@@ -30,10 +32,15 @@ public class AuthUserDaoJdbc implements AuthUserDao {
             SELECT_ALL_SQL =
                     """
                                 SELECT * FROM `rangiffler-auth`.`user`;
+                            """,
+            SELECT_USER_SQL =
+                    """
+                                SELECT * FROM `rangiffler-auth`.`user` WHERE username = ?;
                             """;
 
     @Override
     public UserEntity create(UserEntity userEntity) {
+        userEntity.setId((UUID.randomUUID()));
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(CREATE_USER_SQL)) {
             ps.setString(1, userEntity.getId().toString());
             ps.setString(2, userEntity.getUsername());
@@ -77,6 +84,28 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
             return userEntityList;
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<UserEntity> findByUsername(String username) {
+        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(SELECT_USER_SQL)) {
+            ps.setString(1, username);
+
+            ps.execute();
+
+            try (ResultSet rs = ps.getResultSet()) {
+
+                if (rs.next()) {
+                    return Optional.of(
+                            UserEntityRowMapper.INSTANCE.mapRow(rs, rs.getRow())
+                    );
+                } else {
+                    return Optional.empty();
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -1,7 +1,6 @@
 package io.student.rangiffler.tpl;
 
 import com.atomikos.icatch.jta.UserTransactionImp;
-import io.student.rangiffler.data.DataBases;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.UserTransaction;
 
@@ -21,7 +20,7 @@ public class XaTransactionTemplate {
         return this;
     }
 
-    public <T> T transaction(Supplier<T>... actions) {
+    public <T> T execute(Supplier<T>... actions) {
         UserTransaction ut = new UserTransactionImp();
         try {
             ut.begin();

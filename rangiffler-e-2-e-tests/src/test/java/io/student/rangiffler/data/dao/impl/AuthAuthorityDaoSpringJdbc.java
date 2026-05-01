@@ -12,20 +12,39 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao  {
     private final Config CFG = Config.getInstance();
+
+
+    private final String CREATE_AUTHORITY_SQL =
+            """
+                            INSERT INTO `rangiffler-auth`.`authority` 
+                            (id, user_id, authority)
+                            VALUES (UUID_TO_BIN(?, true),UUID_TO_BIN(?, true),?);
+                    """,
+            DELETE_AUTHORITY_SQL =
+                    """
+                            DELETE FROM `rangiffler-auth`.`authority`
+                            WHERE user_id = (SELECT id FROM `rangiffler-auth`.`user` WHERE username = ?);
+                            """,
+            SELECT_ALL_SQL =
+                    """
+                                SELECT * FROM `rangiffler-auth`.`authority`;
+                            """;
 
     @Override
     public void create(AuthorityEntity... authority) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         jdbcTemplate.batchUpdate(
-                "INSERT INTO `rangiffler-auth`.authority (user_id, authority) VALUES (UUID_TO_BIN(?, true),?)",
+                CREATE_AUTHORITY_SQL,
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setObject(1, authority[i].getUser().getId());
-                        ps.setString(2, authority[i].getAuthority().name());
+                        ps.setString(1, UUID.randomUUID().toString());
+                        ps.setString(2, authority[i].getUser().getId().toString());
+                        ps.setString(3, authority[i].getAuthority().name());
                     }
 
                     @Override
@@ -42,7 +61,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao  {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement = con.prepareStatement(
-                    "DELETE FROM `rangiffler-auth`.`authority` WHERE user_id = (SELECT id FROM `rangiffler-auth`.`user` WHERE username = ?)"
+                    DELETE_AUTHORITY_SQL
             );
             preparedStatement.setString(1, user.getUsername());
             return preparedStatement;
@@ -53,7 +72,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao  {
     public List<AuthorityEntity> findAll() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         return jdbcTemplate.query(
-                "SELECT * FROM `rangiffler-auth`.`authority`",
+                SELECT_ALL_SQL,
                 AuthorityEntityRowMapper.INSTANCE
         );
     }
