@@ -1,123 +1,76 @@
 package io.student.rangiffler.service;
 
 import io.student.rangiffler.config.Config;
+import io.student.rangiffler.data.DataBases;
+import io.student.rangiffler.data.dao.impl.AuthAuthorityDaoJdbc;
+import io.student.rangiffler.data.dao.impl.AuthUserDaoJdbc;
+import io.student.rangiffler.data.entity.AuthorityEntity;
+import io.student.rangiffler.data.entity.UserEntity;
 import io.student.rangiffler.enums.Authority;
 import io.student.rangiffler.model.Data;
 import io.student.rangiffler.model.User;
 import io.student.rangiffler.model.UserJson;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.sql.DriverManager;
+import java.sql.Connection;
+import java.util.Arrays;
 import java.util.UUID;
 
+import static io.student.rangiffler.data.DataBases.xaTransaction;
+
 public class UsersDbClient implements UsersClient {
+
     private static final Config CFG = Config.getInstance();
 
-    private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
-    private String uuid = UUID.randomUUID().toString();
-
-    private static final String INSERT_USER_SQL = """
-                  INSERT INTO `rangiffler-auth`.`user`
-                   (id, username,password,enabled,account_non_expired,account_non_locked,credentials_non_expired)  
-                   VALUES (UUID_TO_BIN(?, true),?,?,?,?,?,?);
-            """,
-            INSERT_AUTHORITIES_SQL = """
-                            INSERT INTO `rangiffler-auth`.authority 
-                            (id, user_id, authority)
-                            VALUES (UUID_TO_BIN(?, true),UUID_TO_BIN(?, true),?);
-                    """,
-            DELETE_USER_SQL = """
-                        DELETE FROM `rangiffler-auth`.`user`
-                        WHERE username = ?;
-                    """,
-            DELETE_AUTHORITIES_SQL = """
-                    DELETE FROM `rangiffler-auth`.`authority`
-                    WHERE user_id = (SELECT id FROM `rangiffler-auth`.`user` WHERE username = ?);
-                    """;
+    private UUID uuid = UUID.randomUUID();
 
     @Override
     public UserJson createUser(String userName, String password) {
-        try {
-            final JdbcTemplate jdbcTemplate = new JdbcTemplate(new SingleConnectionDataSource(
-                    DriverManager.getConnection(
-                            CFG.authJdbcUrl(),
-                            CFG.dbUsername(),
-                            CFG.dbPassword()
-                    ),
-                    true)
-            );
+        UserEntity newUser = xaTransaction(Connection.TRANSACTION_READ_COMMITTED,
+                new DataBases.XaFunction<>(
+                        connection -> {
+                            UserEntity userEntity = new UserEntity();
+                            userEntity.setId(uuid);
+                            userEntity.setUsername(userName);
+                            userEntity.setPassword(password);
+                            userEntity.setEnabled(true);
+                            userEntity.setAccountNonExpired(true);
+                            userEntity.setAccountNonLocked(true);
+                            userEntity.setCredentialsNonExpired(true);
+                            UserEntity user = new AuthUserDaoJdbc(connection)
+                                    .create(userEntity);
 
-            insertUser(jdbcTemplate, uuid, userName, password);
-
-            insertAuthorities(jdbcTemplate, uuid, Authority.read, Authority.write);
-
-            return createUserJson(uuid, userName);
-
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
+                            new AuthAuthorityDaoJdbc(connection).create(
+                                    Arrays.stream(Authority.values())
+                                            .map(authority -> {
+                                                        AuthorityEntity authorityEntity = new AuthorityEntity();
+                                                        authorityEntity.setUser(user);
+                                                        authorityEntity.setAuthority(authority);
+                                                        return authorityEntity;
+                                                    }
+                                            )
+                                            .toArray(AuthorityEntity[]::new));
+                            return user;
+                        },
+                        CFG.authJdbcUrl()
+                )
+        );
+        return createUserJson(newUser.getId().toString(), newUser.getUsername());
     }
 
     @Override
     public void deleteUser(String userName) {
-        try {
-            final JdbcTemplate jdbcTemplate = new JdbcTemplate(new SingleConnectionDataSource(
-                    DriverManager.getConnection(
-                            CFG.authJdbcUrl(),
-                            CFG.dbUsername(),
-                            CFG.dbPassword()
-                    ),
-                    true)
-            );
+        xaTransaction(Connection.TRANSACTION_READ_COMMITTED,
+                new DataBases.XaConsumer(
+                        connection -> {
+                            UserEntity userEntity = new UserEntity();
+                            userEntity.setUsername(userName);
 
-            deleteUserWithAuthorities(jdbcTemplate, userName);
-
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-    }
-
-    private void insertUser(
-            JdbcTemplate jdbcTemplate,
-            String uuid,
-            String userName,
-            String password
-    ) {
-        jdbcTemplate.update(
-                INSERT_USER_SQL,
-                uuid,
-                userName,
-                passwordEncoder.encode(password),
-                true,
-                true,
-                true,
-                true
+                            new AuthAuthorityDaoJdbc(connection).delete(userEntity);
+                            new AuthUserDaoJdbc(connection).delete(userEntity);
+                        },
+                        CFG.authJdbcUrl()
+                )
         );
-    }
-
-    private void insertAuthorities(
-            JdbcTemplate jdbcTemplate,
-            String uuid,
-            Authority... authorities
-    ) {
-        for (Authority authority : authorities) {
-            jdbcTemplate.update(
-                    INSERT_AUTHORITIES_SQL,
-                    UUID.randomUUID().toString(),
-                    uuid,
-                    authority.toString()
-            );
-        }
-    }
-
-    private void deleteUserWithAuthorities(JdbcTemplate jdbcTemplate, String username) {
-        jdbcTemplate.update(DELETE_AUTHORITIES_SQL, username);
-
-        jdbcTemplate.update(DELETE_USER_SQL, username);
     }
 
     private UserJson createUserJson(String uuid, String userName) {

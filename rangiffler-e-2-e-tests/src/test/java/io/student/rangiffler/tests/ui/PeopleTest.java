@@ -1,14 +1,14 @@
 package io.student.rangiffler.tests.ui;
 
-import io.student.rangiffler.annotation.UserType;
-import io.student.rangiffler.extension.UsersQueueExtension;
+import io.student.rangiffler.jupiter.annotation.UserType;
+import io.student.rangiffler.jupiter.extension.UsersQueueExtension;
 import io.student.rangiffler.model.StaticUser;
 import io.student.rangiffler.ui.pages.auth.BaseAuthPage;
 import io.student.rangiffler.ui.pages.auth.LoginAuthPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static io.student.rangiffler.annotation.UserType.Type.*;
+import static io.student.rangiffler.jupiter.annotation.UserType.Type.*;
 import static io.student.rangiffler.enums.Action.ACCEPT;
 import static io.student.rangiffler.enums.Action.WAITING;
 import static io.student.rangiffler.enums.PeopleTab.*;
