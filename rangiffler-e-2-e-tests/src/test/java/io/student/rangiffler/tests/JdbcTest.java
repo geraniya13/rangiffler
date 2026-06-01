@@ -22,7 +22,7 @@ public class JdbcTest {
         String userName = "testUserName12";
         UsersDbClient usersDbClient = new UsersDbClient();
         usersDbClient.createUserSpingJdbcTx(userName, "123456");
-        usersDbClient.getUserSpringJdbc(userName);
+        usersDbClient.getUserSpringJdbcTx(userName);
         usersDbClient.deleteUserSpringJdbcTx(userName);
     }
 
@@ -86,5 +86,17 @@ public class JdbcTest {
         UsersDbClient usersDbClient = new UsersDbClient();
         UserJson userJson = usersDbClient.getUserXaTxJpa("testUserName");
         System.out.println(userJson.toString());
+    }
+
+    @Test
+    public void testSendInvitationXaTxJpa() {
+        UsersDbClient usersDbClient = new UsersDbClient();
+        usersDbClient.createFriendshipInvitationXaTxJpa("testUser1", "testUser2");
+    }
+
+    @Test
+    public void testUpdateFriendshipStatusXaTxJpa() {
+        UsersDbClient usersDbClient = new UsersDbClient();
+        usersDbClient.updateFriendshipStatusXaTxJpa("testUser1", "testUser2");
     }
 }

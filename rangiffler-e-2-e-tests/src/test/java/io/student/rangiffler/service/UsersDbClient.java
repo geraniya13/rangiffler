@@ -8,8 +8,10 @@ import io.student.rangiffler.data.dao.impl.*;
 import io.student.rangiffler.data.entity.api.ApiUserEntity;
 import io.student.rangiffler.data.entity.auth.AuthorityEntity;
 import io.student.rangiffler.data.entity.auth.UserEntity;
+import io.student.rangiffler.data.repository.ApiUserRepository;
 import io.student.rangiffler.data.repository.AuthAuthorityRepository;
 import io.student.rangiffler.data.repository.AuthUserRepository;
+import io.student.rangiffler.data.repository.impl.ApiUserRepositoryJdbc;
 import io.student.rangiffler.data.repository.impl.AuthAuthorityRepositoryJdbc;
 import io.student.rangiffler.data.repository.impl.AuthUserRepositoryJdbc;
 import io.student.rangiffler.enums.Authority;
@@ -18,17 +20,13 @@ import io.student.rangiffler.model.User;
 import io.student.rangiffler.model.UserJson;
 import io.student.rangiffler.tpl.JdbcTransactionTemplate;
 import io.student.rangiffler.tpl.XaTransactionTemplate;
-import org.springframework.data.transaction.ChainedTransactionManager;
-import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.student.rangiffler.tpl.DataSources.dataSource;
 
 public class UsersDbClient implements UsersClient {
 
@@ -44,9 +42,9 @@ public class UsersDbClient implements UsersClient {
     apiUserDao = new ApiUserDaoJdbc();
     private final AuthUserRepository authUserJdbcRepository = new AuthUserRepositoryJdbc();
     private final AuthAuthorityRepository authAuthorityJdbcRepository = new AuthAuthorityRepositoryJdbc();
+    private final ApiUserRepository apiUserJdbcRepository = new ApiUserRepositoryJdbc();
 
     private final JdbcTransactionTemplate jdbcTxTemplate = new JdbcTransactionTemplate(CFG.authJdbcUrl());
-
     private final XaTransactionTemplate xaTxTemplate = new XaTransactionTemplate(CFG.authJdbcUrl(), CFG.apiJdbcUrl());
 
     public UserJson createUserXaTxJpa(String userName, String password) {
@@ -255,14 +253,6 @@ public class UsersDbClient implements UsersClient {
             authUserDao.delete(userEntity);
     }
 
-    public void deleteUserSpringJdbc(String userName) {
-            UserEntity userEntity = new UserEntity();
-            userEntity.setUsername(userName);
-
-            authAuthoritySpringDao.delete(userEntity);
-            authUserSpringDao.delete(userEntity);
-    }
-
     public List<UserJson> getAllUsersTxJpa() {
         return xaTxTemplate.execute(authUserJdbcRepository::findAll).stream()
                 .map(userEntity -> createUserJson(userEntity.getId().toString(), userEntity.getUsername())).toList();
@@ -283,11 +273,6 @@ public class UsersDbClient implements UsersClient {
                 .map(userEntity -> createUserJson(userEntity.getId().toString(), userEntity.getUsername())).toList();
     }
 
-    public List<UserJson> getAllUsersSpring() {
-        return authUserSpringDao.findAll().stream()
-                .map(userEntity -> createUserJson(userEntity.getId().toString(), userEntity.getUsername())).toList();
-    }
-
     public List<AuthorityEntity> getAllAuthoritiesTxJpa() {
         return xaTxTemplate.execute(authAuthorityJdbcRepository::findAll);
     }
@@ -304,10 +289,6 @@ public class UsersDbClient implements UsersClient {
         return authAuthorityDao.findAll();
     }
 
-    public List<AuthorityEntity> getAllAuthoritiesSpring() {
-        return authAuthoritySpringDao.findAll();
-    }
-
     public UserJson getUserXaTxJpa(String userName) {
         return xaTxTemplate.execute(() -> {
             return createUserJson(authUserJdbcRepository.findByUsername(userName).orElseThrow().getId().toString(), userName);
@@ -316,10 +297,6 @@ public class UsersDbClient implements UsersClient {
 
     public UserJson getUser(String userName) {
             return createUserJson(authUserDao.findByUsername(userName).orElseThrow().getId().toString(), userName);
-    }
-
-    public UserJson getUserSpringJdbc(String userName) {
-            return createUserJson(authUserSpringDao.findByUsername(userName).orElseThrow().getId().toString(), userName);
     }
 
     public UserJson getUserXaTx(String userName) {
@@ -337,6 +314,28 @@ public class UsersDbClient implements UsersClient {
     public User getApiUserXaTx(String userName) {
         return xaTxTemplate.execute(() -> {
             return User.fromEntity(apiUserDao.findByUsername(userName).orElseThrow());
+        });
+    }
+
+    public void createFriendshipInvitationXaTxJpa(String userName, String friendUserName) {
+        xaTxTemplate.execute(() -> {
+            ApiUserEntity apiUserEntity = apiUserJdbcRepository.findByUsername(userName).orElseThrow();
+            ApiUserEntity friendUserEntity = apiUserJdbcRepository.findByUsername(friendUserName).orElseThrow();
+
+            apiUserJdbcRepository.addInvitation(apiUserEntity, friendUserEntity);
+
+            return null;
+        });
+    }
+
+    public void updateFriendshipStatusXaTxJpa(String userName, String friendUserName) {
+        xaTxTemplate.execute(() -> {
+            ApiUserEntity apiUserEntity = apiUserJdbcRepository.findByUsername(userName).orElseThrow();
+            ApiUserEntity friendUserEntity = apiUserJdbcRepository.findByUsername(friendUserName).orElseThrow();
+
+            apiUserJdbcRepository.addFriend(apiUserEntity, friendUserEntity);
+
+            return null;
         });
     }
 

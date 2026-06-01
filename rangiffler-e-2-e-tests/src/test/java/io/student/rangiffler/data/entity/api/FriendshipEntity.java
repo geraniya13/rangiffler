@@ -1,7 +1,6 @@
-package io.student.rangiffler.data.entity;
+package io.student.rangiffler.data.entity.api;
 
-import io.student.rangiffler.model.FriendshipEntityId;
-import io.student.rangiffler.model.FriendshipStatus;
+import io.student.rangiffler.enums.FriendshipStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,12 +19,12 @@ public class FriendshipEntity {
     @Id
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "requester_id", nullable = false, columnDefinition = "BINARY(16)")
-    private UserEntity requester;
+    private ApiUserEntity requester;
 
     @Id
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "addressee_id", nullable = false, columnDefinition = "BINARY(16)")
-    private UserEntity addressee;
+    private ApiUserEntity addressee;
 
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
